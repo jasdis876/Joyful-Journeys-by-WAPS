@@ -39,6 +39,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         #canvas {
@@ -64,7 +65,7 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             display: none;
             flex-direction: column;
@@ -85,16 +86,33 @@
         h1 {
             text-align: center;
             color: #3498db;
-            font-size: clamp(1.8em, 5vw, 2.8em);
-            margin-bottom: 10px;
+            font-size: clamp(1.6em, 5vw, 2.5em);
+            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             line-height: 1.2;
         }
 
+        .tagline {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: clamp(0.8em, 2.5vw, 1em);
+            margin-bottom: 5px;
+            font-style: italic;
+            line-height: 1.3;
+        }
+
+        .portrait-hint {
+            text-align: center;
+            color: #3498db;
+            font-size: clamp(0.7em, 2vw, 0.9em);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
         h2 {
             color: #2980b9;
-            font-size: clamp(1.4em, 4vw, 2em);
-            margin-bottom: 15px;
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            margin-bottom: 12px;
             text-align: center;
             line-height: 1.2;
         }
@@ -102,45 +120,85 @@
         .subtitle {
             text-align: center;
             color: #7f8c8d;
-            font-size: clamp(0.9em, 3vw, 1.2em);
-            margin-bottom: 20px;
+            font-size: clamp(0.8em, 2.8vw, 1.1em);
+            margin-bottom: 15px;
             line-height: 1.3;
         }
 
         .mode-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+            gap: 12px;
+            margin: 15px 0;
             flex: 1;
             align-content: center;
         }
 
-        @media (max-height: 600px) {
+        @media (max-width: 420px), (max-height: 740px) {
+            .screen {
+                padding: 12px;
+                border-radius: 20px;
+            }
+            
             .mode-cards {
                 gap: 10px;
-                margin: 10px 0;
             }
             
             .mode-card {
-                padding: 15px !important;
-                font-size: 1em !important;
+                padding: 12px !important;
+                font-size: 0.9em !important;
+                min-height: 70px;
+            }
+            
+            .difficulty-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 14px 25px;
+                font-size: 1em;
+                max-width: 250px;
+                margin: 12px auto;
+            }
+            
+            .emoji-large {
+                font-size: clamp(3em, 12vw, 6em);
+                margin: 15px 0;
+            }
+            
+            .emoji-option {
+                font-size: clamp(2em, 6vw, 3em);
+                padding: 12px;
+                min-width: 70px;
+            }
+            
+            .parent-panel {
+                padding: 12px;
+                font-size: clamp(0.75em, 2.2vw, 0.9em);
+            }
+            
+            .turn-display {
+                font-size: clamp(1.6em, 5vw, 2.5em);
+                padding: 15px;
+                margin: 20px 0;
             }
         }
 
         .mode-card {
             background: linear-gradient(135deg, #a5d6a7, #81c784);
             border-radius: 20px;
-            padding: 20px;
+            padding: 18px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 4px solid transparent;
-            font-size: clamp(1em, 3vw, 1.3em);
+            font-size: clamp(0.9em, 2.8vw, 1.2em);
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-            min-height: 80px;
+            min-height: 75px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -161,19 +219,19 @@
         .difficulty-selector {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 15px 0;
             flex-wrap: wrap;
         }
 
         .difficulty-btn {
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: #ff9800;
             color: white;
             border: none;
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -197,18 +255,18 @@
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
-            padding: 16px 30px;
-            font-size: clamp(1.1em, 3vw, 1.4em);
+            padding: 15px 28px;
+            font-size: clamp(1em, 2.8vw, 1.3em);
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 15px auto;
+            margin: 12px auto;
             display: block;
             width: 100%;
-            max-width: 280px;
+            max-width: 260px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -228,9 +286,9 @@
         }
 
         .emoji-large {
-            font-size: clamp(4em, 15vw, 8em);
+            font-size: clamp(3.5em, 14vw, 7em);
             text-align: center;
-            margin: 20px 0;
+            margin: 18px 0;
             animation: pulse 2s infinite;
             flex-shrink: 0;
         }
@@ -244,21 +302,21 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
             flex: 1;
             align-content: center;
         }
 
         .emoji-option {
-            font-size: clamp(2.5em, 8vw, 4em);
-            padding: 15px;
+            font-size: clamp(2.2em, 7vw, 3.5em);
+            padding: 14px;
             background: white;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 4px solid transparent;
-            min-width: 80px;
+            min-width: 75px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -271,9 +329,9 @@
 
         .feedback {
             text-align: center;
-            font-size: clamp(1.2em, 4vw, 2em);
-            margin: 15px 0;
-            min-height: 50px;
+            font-size: clamp(1.1em, 3.5vw, 1.8em);
+            margin: 12px 0;
+            min-height: 45px;
             color: #27ae60;
             font-weight: bold;
             flex-shrink: 0;
@@ -282,21 +340,21 @@
         .path-container {
             position: relative;
             flex: 1;
-            margin: 20px 0;
-            min-height: 200px;
+            margin: 15px 0;
+            min-height: 180px;
         }
 
         .path-dot {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -316,10 +374,10 @@
         }
 
         .turn-display {
-            font-size: clamp(2em, 6vw, 3em);
+            font-size: clamp(1.8em, 5.5vw, 2.8em);
             text-align: center;
-            margin: 25px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 18px;
             background: linear-gradient(135deg, #f1c40f, #f39c12);
             border-radius: 20px;
             color: white;
@@ -329,11 +387,11 @@
 
         .progress-bar {
             width: 100%;
-            height: 35px;
+            height: 32px;
             background: #ecf0f1;
             border-radius: 20px;
             overflow: hidden;
-            margin: 25px 0;
+            margin: 20px 0;
             flex-shrink: 0;
         }
 
@@ -346,10 +404,10 @@
         }
 
         .thought-bubble {
-            font-size: clamp(3em, 10vw, 6em);
+            font-size: clamp(2.8em, 9vw, 5.5em);
             text-align: center;
-            margin: 25px 0;
-            padding: 25px;
+            margin: 20px 0;
+            padding: 20px;
             background: white;
             border-radius: 50px;
             position: relative;
@@ -360,25 +418,25 @@
         .thought-bubble:after {
             content: '';
             position: absolute;
-            bottom: -25px;
+            bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
-            border: 12px solid transparent;
+            border: 10px solid transparent;
             border-top-color: white;
         }
 
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
             flex-wrap: wrap;
             flex-shrink: 0;
         }
 
         .control-btn {
-            font-size: clamp(1.5em, 5vw, 2em);
-            padding: 15px 25px;
+            font-size: clamp(1.3em, 4.5vw, 1.8em);
+            padding: 14px 22px;
             background: #9b59b6;
             color: white;
             border: none;
@@ -396,67 +454,80 @@
         .parent-prompt {
             background: rgba(255, 241, 118, 0.95);
             border-radius: 15px;
-            padding: 15px;
-            margin: 15px 0;
-            font-size: clamp(1em, 3vw, 1.2em);
+            padding: 12px;
+            margin: 12px 0;
+            font-size: clamp(0.9em, 2.8vw, 1.1em);
             color: #2c3e50;
             text-align: center;
             border: 3px solid #f1c40f;
             flex-shrink: 0;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .parent-panel {
             background: rgba(52, 152, 219, 0.95);
             border-radius: 15px;
-            padding: 15px;
+            padding: 12px;
             margin-top: auto;
             color: white;
-            font-size: clamp(0.9em, 2.5vw, 1.1em);
+            font-size: clamp(0.8em, 2.3vw, 1em);
             border: 3px solid #2980b9;
             flex-shrink: 0;
-            max-height: 150px;
+            max-height: 140px;
             overflow: hidden;
             transition: max-height 0.3s ease;
+            line-height: 1.3;
         }
 
         .parent-panel.collapsed {
-            max-height: 60px;
-            padding: 10px 15px;
+            max-height: 55px;
+            padding: 10px 12px;
         }
 
         .parent-panel-content {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .parent-panel-line {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: flex-start;
+            overflow: hidden;
         }
 
         .parent-panel-label {
             font-weight: bold;
-            min-width: 70px;
+            min-width: 65px;
             flex-shrink: 0;
         }
 
         .parent-panel-text {
             flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .parent-panel-more {
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            padding: 5px 15px;
+            padding: 5px 12px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
-            margin-top: 10px;
+            font-size: 0.85em;
+            margin-top: 8px;
             align-self: center;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .parent-panel-more:hover, .parent-panel-more:active {
@@ -464,24 +535,64 @@
             transform: scale(1.05);
         }
 
-        .debug-panel {
+        .script-modal {
             position: fixed;
-            bottom: 0;
+            top: 0;
             left: 0;
             right: 0;
-            background: rgba(44, 62, 80, 0.9);
-            color: white;
-            padding: 12px;
-            font-family: monospace;
-            z-index: 100;
-            font-size: clamp(0.9em, 2.5vw, 1.2em);
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .script-modal.active {
+            display: flex;
+        }
+
+        .script-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .script-modal-title {
+            color: #2980b9;
+            font-size: 1.5em;
+            margin-bottom: 15px;
             text-align: center;
+        }
+
+        .script-modal-text {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .script-modal-close {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+            font-weight: bold;
         }
 
         .audio-controls {
             position: fixed;
-            top: 15px;
-            right: 15px;
+            top: 12px;
+            right: 12px;
             z-index: 100;
         }
 
@@ -489,9 +600,9 @@
             background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.8em;
+            width: 48px;
+            height: 48px;
+            font-size: 1.6em;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
@@ -504,14 +615,14 @@
 
         .back-btn {
             position: fixed;
-            top: 15px;
-            left: 15px;
+            top: 12px;
+            left: 12px;
             background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.3em;
+            width: 48px;
+            height: 48px;
+            font-size: 1.2em;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
@@ -528,39 +639,10 @@
                 border-radius: 20px;
             }
             
-            .screen {
-                padding: 15px;
-                border-radius: 20px;
-            }
-            
-            .mode-cards {
-                grid-template-columns: 1fr;
-            }
-            
             .path-dot {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5em;
-            }
-        }
-
-        @media (max-height: 500px) {
-            .parent-panel {
-                font-size: 0.8em;
-                padding: 10px;
-            }
-            
-            .parent-panel.collapsed {
-                max-height: 50px;
-            }
-            
-            .emoji-large {
-                margin: 10px 0;
-            }
-            
-            .feedback {
-                margin: 10px 0;
-                min-height: 40px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.4em;
             }
         }
     </style>
@@ -575,7 +657,8 @@
                 <div class="screen active" id="screen-init">
                     <div class="screen-content">
                         <h1>🎮 Joyful Journeys</h1>
-                        <p class="subtitle">WAPS Edition - Interactive Learning Games</p>
+                        <div class="tagline">We are here to help — Western Autism Parents Support</div>
+                        <div class="portrait-hint">Best in Portrait Mode 📱</div>
                         
                         <div class="mode-cards">
                             <div class="mode-card" data-mode="1">😊 Emotion Match</div>
@@ -630,7 +713,7 @@
                                     <span class="parent-panel-label">If wrong:</span>
                                     <span class="parent-panel-text">"Good try—look at the eyes and mouth. Try again."</span>
                                 </div>
-                                <button class="parent-panel-more" data-action="toggle-panel">More</button>
+                                <button class="parent-panel-more" data-action="show-script" data-mode="1">More</button>
                             </div>
                         </div>
                     </div>
@@ -674,7 +757,7 @@
                                     <span class="parent-panel-label">If wrong:</span>
                                     <span class="parent-panel-text">"Let's hear it again—try once more."</span>
                                 </div>
-                                <button class="parent-panel-more" data-action="toggle-panel">More</button>
+                                <button class="parent-panel-more" data-action="show-script" data-mode="2">More</button>
                             </div>
                         </div>
                     </div>
@@ -710,7 +793,7 @@
                                     <span class="parent-panel-label">If wrong:</span>
                                     <span class="parent-panel-text">"Start at the smallest number and go in order."</span>
                                 </div>
-                                <button class="parent-panel-more" data-action="toggle-panel">More</button>
+                                <button class="parent-panel-more" data-action="show-script" data-mode="3">More</button>
                             </div>
                         </div>
                     </div>
@@ -740,7 +823,7 @@
                                 </div>
                                 <div class="parent-panel-line">
                                     <span class="parent-panel-label">Do:</span>
-                                    <span class="parent-panel-text">Wait during friend's turn; praise waiting.</span>
+                                    <span class="parent-panel-text">After your child taps, you tap for 'My turn'.</span>
                                 </div>
                                 <div class="parent-panel-line">
                                     <span class="parent-panel-label">If correct:</span>
@@ -750,7 +833,7 @@
                                     <span class="parent-panel-label">If wrong:</span>
                                     <span class="parent-panel-text">"It's my turn now. Watch, then you go."</span>
                                 </div>
-                                <button class="parent-panel-more" data-action="toggle-panel">More</button>
+                                <button class="parent-panel-more" data-action="show-script" data-mode="4">More</button>
                             </div>
                         </div>
                     </div>
@@ -790,7 +873,7 @@
                                     <span class="parent-panel-label">If wrong:</span>
                                     <span class="parent-panel-text">"Try again—look at the picture in the bubble."</span>
                                 </div>
-                                <button class="parent-panel-more" data-action="toggle-panel">More</button>
+                                <button class="parent-panel-more" data-action="show-script" data-mode="5">More</button>
                             </div>
                         </div>
                     </div>
@@ -798,9 +881,13 @@
             </div>
         </div>
         
-        <!-- Debug Panel -->
-        <div class="debug-panel" id="debug-panel">
-            Last click: None
+        <!-- Script Modal -->
+        <div class="script-modal" id="script-modal">
+            <div class="script-modal-content">
+                <div class="script-modal-title" id="script-modal-title">Parent Script</div>
+                <div class="script-modal-text" id="script-modal-text"></div>
+                <button class="script-modal-close" id="script-modal-close">Close</button>
+            </div>
         </div>
         
         <!-- Audio Controls -->
@@ -837,12 +924,45 @@
             currentGame: {}
         };
 
+        // Script content for modal
+        const scriptContent = {
+            1: [
+                "Say: 'How is he/she feeling? Point to the face.'",
+                "Do: Name it: happy/sad/angry/surprised.",
+                "If correct: 'Yes, that face is ____!'",
+                "If wrong: 'Good try—look at the eyes and mouth. Try again.'"
+            ],
+            2: [
+                "Say: 'Listen… What made that sound?'",
+                "Do: Make the sound once, then wait.",
+                "If correct: 'Yes! That's the ____.'",
+                "If wrong: 'Let's hear it again—try once more.'"
+            ],
+            3: [
+                "Say: 'Let's go 1, 2, 3… tap the next number.'",
+                "Do: Point near the next dot, then fade help.",
+                "If correct: 'Nice! Next number.'",
+                "If wrong: 'Start at the smallest number and go in order.'"
+            ],
+            4: [
+                "Say: 'My turn… your turn.'",
+                "Do: After your child taps, you tap for 'My turn'.",
+                "If correct: 'Great waiting—now your turn!'",
+                "If wrong: 'It's my turn now. Watch, then you go.'"
+            ],
+            5: [
+                "Say: 'What do you want? Show me.'",
+                "Do: Model: 'I want ___.'",
+                "If correct: 'Yes! You chose ___. Great asking!'",
+                "If wrong: 'Try again—look at the picture in the bubble.'"
+            ]
+        };
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initializeCanvas();
             setupEventDelegation();
             setupAudio();
-            updateDebug();
             setupParentPanels();
         });
 
@@ -887,6 +1007,20 @@
             document.addEventListener('click', (e) => {
                 const target = e.target;
                 
+                // Script modal close
+                if (target.closest('#script-modal-close')) {
+                    document.getElementById('script-modal').classList.remove('active');
+                    return;
+                }
+                
+                // Show script modal
+                const scriptAction = target.closest('[data-action="show-script"]');
+                if (scriptAction) {
+                    const mode = parseInt(scriptAction.dataset.mode);
+                    showScriptModal(mode);
+                    return;
+                }
+                
                 // Parent panel more button
                 const panelAction = target.closest('[data-action="toggle-panel"]');
                 if (panelAction) {
@@ -894,7 +1028,6 @@
                     if (panel) {
                         panel.classList.toggle('collapsed');
                         panelAction.textContent = panel.classList.contains('collapsed') ? 'More' : 'Less';
-                        updateLastClick('Parent Panel Toggle');
                     }
                     return;
                 }
@@ -903,7 +1036,6 @@
                 const replayAction = target.closest('[data-action="replay-parent"]');
                 if (replayAction && gameState.selectedMode === 2) {
                     showParentPrompt();
-                    updateLastClick('Parent Repeat Button');
                     return;
                 }
                 
@@ -911,7 +1043,6 @@
                 const modeCard = target.closest('.mode-card');
                 if (modeCard) {
                     handleModeSelect(modeCard.dataset.mode);
-                    updateLastClick(`Mode ${modeCard.dataset.mode} Card`);
                     return;
                 }
                 
@@ -919,28 +1050,24 @@
                 const difficultyBtn = target.closest('.difficulty-btn');
                 if (difficultyBtn) {
                     handleDifficultySelect(parseInt(difficultyBtn.dataset.level));
-                    updateLastClick(`Difficulty ${difficultyBtn.dataset.level}`);
                     return;
                 }
                 
                 // Start Button
                 if (target.closest('#start-btn')) {
                     startGame();
-                    updateLastClick('Start Button');
                     return;
                 }
                 
                 // Back Button
                 if (target.closest('#back-btn')) {
                     showScreen('init');
-                    updateLastClick('Back Button');
                     return;
                 }
                 
                 // Mute Button
                 if (target.closest('#mute-btn')) {
                     toggleMute();
-                    updateLastClick('Mute Button');
                     return;
                 }
                 
@@ -949,13 +1076,39 @@
             });
         }
 
+        function showScriptModal(mode) {
+            const modal = document.getElementById('script-modal');
+            const title = document.getElementById('script-modal-title');
+            const text = document.getElementById('script-modal-text');
+            
+            const modeNames = {
+                1: 'Emotion Match',
+                2: 'Sound & Attention',
+                3: 'Follow the Path',
+                4: 'Turn-Taking',
+                5: 'Request & Choose'
+            };
+            
+            title.textContent = `${modeNames[mode]} - Parent Script`;
+            text.innerHTML = '';
+            
+            scriptContent[mode].forEach(line => {
+                const div = document.createElement('div');
+                div.textContent = line;
+                div.style.marginBottom = '8px';
+                div.style.lineHeight = '1.4';
+                text.appendChild(div);
+            });
+            
+            modal.classList.add('active');
+        }
+
         function handleGameClicks(target) {
             // Emoji Options
             const emojiOption = target.closest('.emoji-option');
             if (emojiOption) {
                 const mode = gameState.selectedMode;
                 const optionText = emojiOption.textContent;
-                updateLastClick(`Emoji Option: ${optionText}`);
                 
                 switch(mode) {
                     case 1: handleEmotionMatch(optionText); break;
@@ -969,14 +1122,12 @@
             const pathDot = target.closest('.path-dot');
             if (pathDot && gameState.selectedMode === 3) {
                 const dotNumber = parseInt(pathDot.textContent);
-                updateLastClick(`Path Dot ${dotNumber}`);
                 handlePathDot(dotNumber);
                 return;
             }
             
             // Take Turn Button
             if (target.closest('#take-turn') && gameState.selectedMode === 4) {
-                updateLastClick('Take Turn Button');
                 handleTurnTaking();
                 return;
             }
@@ -985,7 +1136,6 @@
             const button = target.closest('button');
             if (button) {
                 const id = button.id;
-                updateLastClick(`Button: ${id}`);
                 
                 switch(id) {
                     case 'next-btn-mode1': nextEmotion(); break;
@@ -999,12 +1149,12 @@
             // Auto-collapse parent panels on small screens
             const checkScreenSize = () => {
                 const panels = document.querySelectorAll('.parent-panel');
-                const shouldCollapse = window.innerHeight < 600;
+                const shouldCollapse = window.innerHeight < 650 || window.innerWidth < 400;
                 panels.forEach(panel => {
                     panel.classList.toggle('collapsed', shouldCollapse);
-                    const moreBtn = panel.querySelector('.parent-panel-more');
+                    const moreBtn = panel.querySelector('[data-action="show-script"]');
                     if (moreBtn) {
-                        moreBtn.textContent = shouldCollapse ? 'More' : 'Less';
+                        moreBtn.textContent = shouldCollapse ? 'More' : 'More';
                     }
                 });
             };
@@ -1019,7 +1169,6 @@
                 card.classList.remove('selected');
             });
             event.target.closest('.mode-card').classList.add('selected');
-            console.log('Mode selected:', mode);
         }
 
         function handleDifficultySelect(level) {
@@ -1028,7 +1177,6 @@
                 btn.classList.remove('selected');
             });
             event.target.closest('.difficulty-btn').classList.add('selected');
-            console.log('Difficulty set to:', level);
         }
 
         function startGame() {
@@ -1036,11 +1184,6 @@
                 alert('Please select a game mode!');
                 return;
             }
-            
-            console.log('Starting game:', {
-                mode: gameState.selectedMode,
-                difficulty: gameState.difficulty
-            });
             
             const mode = gameState.selectedMode;
             showScreen(`mode${mode}`);
@@ -1063,7 +1206,6 @@
             document.getElementById('back-btn').style.display = screenName === 'init' ? 'none' : 'block';
             
             gameState.currentScreen = screenName;
-            console.log('Screen changed to:', screenName);
         }
 
         // Mode 1: Emotion Match
@@ -1194,7 +1336,17 @@
             container.innerHTML = '';
             feedback.textContent = 'Tap dot #1 to start!';
             
-            const numDots = 3 + gameState.difficulty;
+            // Calculate number of dots based on difficulty
+            let numDots;
+            switch(gameState.difficulty) {
+                case 1: numDots = 10; break;
+                case 2: numDots = 11 + Math.floor(Math.random() * 10); break; // 11-20
+                case 3: numDots = 21 + Math.floor(Math.random() * 10); break; // 21-30
+                case 4: numDots = 31 + Math.floor(Math.random() * 10); break; // 31-40
+                case 5: numDots = 41 + Math.floor(Math.random() * 10); break; // 41-50
+                default: numDots = 15;
+            }
+            
             gameData.currentGame.pathSequence = Array.from({length: numDots}, (_, i) => i + 1);
             gameData.currentGame.currentDot = 1;
             
@@ -1217,34 +1369,31 @@
                     container.appendChild(dot);
                 });
             } else {
-                // Fallback to horizontal snake path
+                // Fallback to snake path
                 createSnakePath(numDots, container);
             }
         }
 
         function generateSafeDotPositions(numDots) {
-            const container = document.getElementById('path-container');
-            const containerRect = container.getBoundingClientRect();
-            
             // Safe area within container (leaving room for UI elements)
-            const safeLeft = 10; // 10% from left
-            const safeRight = 90; // 10% from right
+            const safeLeft = 8; // 8% from left
+            const safeRight = 92; // 8% from right
             const safeTop = 15; // 15% from top (room for header)
             const safeBottom = 85; // 15% from bottom (room for parent panel)
             
             const positions = [];
-            const dotRadius = 30; // 3% of container width (60px dot / 100% width estimation)
-            const minDistance = dotRadius * 2.2;
+            const dotRadius = 2.5; // 2.5% of container width
+            const minDistance = dotRadius * 4.4; // Increased minimum distance
             
             let attempts = 0;
-            const maxAttempts = 1000;
+            const maxAttempts = numDots * 50;
             
             while (positions.length < numDots && attempts < maxAttempts) {
                 attempts++;
                 
                 // Generate random position within safe area
-                const x = safeLeft + Math.random() * (safeRight - safeLeft - 6); // -6 for dot width
-                const y = safeTop + Math.random() * (safeBottom - safeTop - 6); // -6 for dot height
+                const x = safeLeft + Math.random() * (safeRight - safeLeft - 5);
+                const y = safeTop + Math.random() * (safeBottom - safeTop - 5);
                 
                 // Check if this position is far enough from existing dots
                 let valid = true;
@@ -1259,8 +1408,8 @@
                     }
                 }
                 
-                // Also ensure dot doesn't go offscreen
-                if (x < safeLeft || x > safeRight - 6 || y < safeTop || y > safeBottom - 6) {
+                // Ensure dot stays within bounds
+                if (x < safeLeft || x > safeRight - 5 || y < safeTop || y > safeBottom - 5) {
                     valid = false;
                 }
                 
@@ -1269,31 +1418,32 @@
                 }
             }
             
-            // If we couldn't generate enough positions, return empty array for fallback
             return positions.length === numDots ? positions : [];
         }
 
         function createSnakePath(numDots, container) {
             // Create a snake-like path that always fits
-            const rows = Math.ceil(numDots / 3);
-            const startY = 20;
-            const stepY = (80 - startY) / Math.max(1, rows - 1);
+            const dotsPerRow = Math.ceil(Math.sqrt(numDots * 1.5));
+            const rows = Math.ceil(numDots / dotsPerRow);
+            const startY = 15;
+            const endY = 85;
+            const stepY = (endY - startY) / Math.max(1, rows - 1);
             
             for (let i = 0; i < numDots; i++) {
-                const row = Math.floor(i / 3);
-                const col = i % 3;
+                const row = Math.floor(i / dotsPerRow);
+                const col = i % dotsPerRow;
                 
                 // Alternate direction for each row
-                const effectiveCol = row % 2 === 0 ? col : 2 - col;
+                const effectiveCol = row % 2 === 0 ? col : dotsPerRow - 1 - col;
                 
-                const x = 20 + (effectiveCol * 30);
+                const x = 10 + (effectiveCol * ((80) / Math.max(1, dotsPerRow - 1)));
                 const y = startY + (row * stepY);
                 
                 const dot = document.createElement('div');
                 dot.className = 'path-dot';
                 dot.textContent = i + 1;
-                dot.style.left = `${x}%`;
-                dot.style.top = `${y}%`;
+                dot.style.left = `${Math.min(x, 90)}%`;
+                dot.style.top = `${Math.min(y, 90)}%`;
                 
                 if (i === 0) {
                     dot.classList.add('active');
@@ -1351,10 +1501,10 @@
 
         function updateTurnDisplay() {
             const display = document.getElementById('turn-display');
-            display.textContent = gameData.currentGame.isPlayerTurn ? 'Your Turn! 👆' : "Friend's Turn...";
+            display.textContent = gameData.currentGame.isPlayerTurn ? 'Your Turn! 👆' : "My Turn...";
             display.style.background = gameData.currentGame.isPlayerTurn 
                 ? 'linear-gradient(135deg, #2ecc71, #27ae60)'
-                : 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                : 'linear-gradient(135deg, #3498db, #2980b9)';
         }
 
         function handleTurnTaking() {
@@ -1383,15 +1533,15 @@
             
             // Check if game complete
             if (gameData.currentGame.turnCount >= gameData.currentGame.totalTurns) {
-                feedback.textContent = 'Game Complete! Everyone gets a turn! 🎉';
+                feedback.textContent = 'Game Complete! Great taking turns! 🎉';
                 playSound('celebration');
                 return;
             }
             
-            // Friend's turn after delay
+            // Parent's turn after delay
             setTimeout(() => {
-                playSound('friend');
-                feedback.textContent = 'Friend took their turn!';
+                playSound('success');
+                feedback.textContent = 'My turn complete!';
                 
                 gameData.currentGame.turnCount++;
                 gameData.currentGame.isPlayerTurn = true;
@@ -1402,7 +1552,7 @@
                 updateTurnDisplay();
                 
                 if (gameData.currentGame.turnCount >= gameData.currentGame.totalTurns) {
-                    feedback.textContent = 'Game Complete! Everyone gets a turn! 🎉';
+                    feedback.textContent = 'Game Complete! Great taking turns! 🎉';
                     playSound('celebration');
                 }
             }, 1500 + Math.random() * 1000);
@@ -1538,12 +1688,6 @@
                     gainNode.gain.setValueAtTime(0.3, context.currentTime);
                     break;
                     
-                case 'friend':
-                    oscillator.frequency.setValueAtTime(392.00, context.currentTime); // G4
-                    oscillator.frequency.setValueAtTime(329.63, context.currentTime + 0.1); // E4
-                    gainNode.gain.setValueAtTime(0.2, context.currentTime);
-                    break;
-                    
                 default:
                     oscillator.frequency.setValueAtTime(440, context.currentTime);
                     gainNode.gain.setValueAtTime(0.1, context.currentTime);
@@ -1560,7 +1704,6 @@
             gameState.muted = !gameState.muted;
             const muteBtn = document.getElementById('mute-btn');
             muteBtn.textContent = gameState.muted ? '🔇' : '🔊';
-            console.log('Mute:', gameState.muted);
         }
 
         // Utility Functions
@@ -1570,16 +1713,6 @@
                 [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
-        }
-
-        function updateLastClick(elementName) {
-            gameState.lastClick = elementName;
-            updateDebug();
-            console.log('Clicked:', elementName);
-        }
-
-        function updateDebug() {
-            document.getElementById('debug-panel').textContent = `Last click: ${gameState.lastClick}`;
         }
 
         // Initialize audio on first interaction
