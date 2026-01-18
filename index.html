@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyful Journeys (WAPS Edition)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            color: #2c3e50;
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+        }
+        
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #canvasContainer {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin: 10px;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .copyright {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            opacity: 0.35;
+            color: #2c3e50;
+            z-index: 100;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        @media (max-height: 600px) {
+            .copyright {
+                font-size: 10px;
+                bottom: 4px;
+            }
+        }
+        
+        #uiOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        .ui-element {
+            pointer-events: auto;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #4a90e2 0%, #357ae8 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 32px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .button:hover, .button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        
+        .button.success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+        
+        .icon-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #4a90e2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
+            color: #4a90e2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-button:hover {
+            transform: scale(1.1);
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            pointer-events: auto;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357ae8 100%);
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #4a90e2;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle {
+            width: 80px;
+            height: 40px;
+            background: #95a5a6;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle.active {
+            background: #2ecc71;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle.active::after {
+            left: 44px;
+        }
+        
+        .mode-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mode-card:hover, .mode-card.selected {
+            transform: translateY(-5px);
+            border-color: #4a90e2;
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.2);
+        }
+        
+        .mode-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .difficulty-bubble {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-bubble:hover, .difficulty-bubble.selected {
+            background: #4a90e2;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .emoji {
+            font-size: 40px;
+        }
+        
+        .star {
+            font-size: 30px;
+            color: #f1c40f;
+            margin: 0 2px;
+        }
+        
+        .skill-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e8f4fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 5px;
+        }
+        
+        .character {
+            position: absolute;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .hint {
+            position: absolute;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 18px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .feedback {
+            position: absolute;
+            font-size: 60px;
+            animation: bounce 0.5s ease infinite, fadeIn 0.3s ease;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover, .card.selected {
+            border-color: #4a90e2;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.2);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="canvasContainer">
+            <canvas id="gameCanvas"></canvas>
+            <div id="uiOverlay"></div>
+        </div>
+        <div class="copyright">© Western Autism Parents Support (WAPS)</div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+            
+            // State management
+            const GameState = {
+                LEVEL_SELECT: 'levelSelect',
+                PLAYING: 'playing',
+                PAUSED: 'paused',
+                RESULTS: 'results',
+                CAREGIVER: 'caregiver'
+            };
+            
+            let currentState = GameState.LEVEL_SELECT;
+            let gameMode = null;
+            let difficulty = 1;
+            let sessionLength = 'medium';
+            let guidedPlay = false;
+            let muted = false;
+            let animationIntensity = 'medium';
+            let visualContrast = 'normal';
+            let hintsEnabled = true;
+            let volume = 0.5;
+            
+            // Progress tracking
+            let progress = JSON.parse(localStorage.getItem('joyfulJourneysProgress') || '{}');
+            if (!progress.sessions) {
+                progress = {
+                    sessions: 0,
+                    modes: {},
+                    difficulties: {},
+                    responseTimes: [],
+                    hintUsage: 0,
+                    completions: {}
+                };
+            }
+            
+            // Canvas setup
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const uiOverlay = document.getElementById('uiOverlay');
+            
+            let canvasWidth, canvasHeight;
+            let dpr = window.devicePixelRatio || 1;
+            
+            // Game variables
+            let currentRound = 0;
+            let totalRounds = 10;
+            let score = 0;
+            let roundStartTime = 0;
+            let sessionTimer = 0;
+            let sessionEndTime = 0;
+            let isPaused = false;
+            let animationFrameId = null;
+            let audioContext = null;
+            let currentSounds = [];
+            
+            // Character definitions
+            const characters = [
+                {
+                    name: 'Maya',
+                    skinTone: '#8d5524',
+                    hairStyle: 'afro',
+                    hairColor: '#1a1a1a',
+                    eyeColor: '#2c3e50',
+                    features: ['braids', 'glasses']
+                },
+                {
+                    name: 'Jordan',
+                    skinTone: '#c68642',
+                    hairStyle: 'twists',
+                    hairColor: '#2c1810',
+                    eyeColor: '#3498db',
+                    features: ['dimples']
+                },
+                {
+                    name: 'Aisha',
+                    skinTone: '#e0ac69',
+                    hairStyle: 'braids',
+                    hairColor: '#1a1a1a',
+                    eyeColor: '#27ae60',
+                    features: ['beads']
+                },
+                {
+                    name: 'Kofi',
+                    skinTone: '#7a4b23',
+                    hairStyle: 'curls',
+                    hairColor: '#2c1810',
+                    eyeColor: '#9b59b6',
+                    features: ['freckles']
+                }
+            ];
+            
+            // Emotion definitions
+            const emotions = {
+                happy: { emoji: '😊', color: '#f1c40f', description: 'Happy' },
+                sad: { emoji: '😢', color: '#3498db', description: 'Sad' },
+                angry: { emoji: '😠', color: '#e74c3c', description: 'Angry' },
+                surprised: { emoji: '😲', color: '#9b59b6', description: 'Surprised' },
+                tired: { emoji: '😴', color: '#95a5a6', description: 'Tired' },
+                scared: { emoji: '😨', color: '#34495e', description: 'Scared' }
+            };
+            
+            // Sound definitions
+            const sounds = {
+                bell: { frequency: 784, type: 'sine', duration: 0.5 },
+                drum: { frequency: 150, type: 'square', duration: 0.3 },
+                chime: { frequency: 659, type: 'triangle', duration: 0.8 },
+                whistle: { frequency: 1047, type: 'sine', duration: 0.4 },
+                maraca: { frequency: 200, type: 'noise', duration: 0.2 }
+            };
+            
+            // Initialize
+            function init() {
+                setupCanvas();
+                setupAudio();
+                setupEventListeners();
+                createLevelSelectUI();
+                requestAnimationFrame(gameLoop);
+                
+                // Auto-save progress every 30 seconds
+                setInterval(saveProgress, 30000);
+            }
+            
+            function setupCanvas() {
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                window.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        pauseGame();
+                    }
+                });
+            }
+            
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvasWidth = container.clientWidth;
+                canvasHeight = container.clientHeight;
+                
+                canvas.width = canvasWidth * dpr;
+                canvas.height = canvasHeight * dpr;
+                
+                ctx.scale(dpr, dpr);
+                
+                if (currentState === GameState.LEVEL_SELECT) {
+                    createLevelSelectUI();
+                }
+            }
+            
+            function setupAudio() {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                }
+            }
+            
+            function playSound(soundName, pitch = 1) {
+                if (muted || !audioContext || volume === 0) return;
+                
+                const soundDef = sounds[soundName];
+                if (!soundDef) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (soundDef.type === 'noise') {
+                    const bufferSize = audioContext.sampleRate * soundDef.duration;
+                    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                    const output = buffer.getChannelData(0);
+                    
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+                    
+                    const noiseSource = audioContext.createBufferSource();
+                    noiseSource.buffer = buffer;
+                    noiseSource.connect(gainNode);
+                    noiseSource.start();
+                    noiseSource.stop(audioContext.currentTime + soundDef.duration);
+                } else {
+                    oscillator.type = soundDef.type;
+                    oscillator.frequency.setValueAtTime(soundDef.frequency * pitch, audioContext.currentTime);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + soundDef.duration);
+                }
+                
+                gainNode.gain.setValueAtTime(0.3 * volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + soundDef.duration);
+                
+                currentSounds.push({ oscillator, gainNode });
+                
+                setTimeout(() => {
+                    currentSounds = currentSounds.filter(s => s.oscillator !== oscillator);
+                }, soundDef.duration * 1000);
+            }
+            
+            function setupEventListeners() {
+                // Parent gate for caregiver panel
+                let cornerPressStart = 0;
+                canvas.addEventListener('touchstart', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.touches[0].clientX - rect.left;
+                    const y = e.touches[0].clientY - rect.top;
+                    
+                    if (x < 100 && y < 100) {
+                        cornerPressStart = Date.now();
+                    }
+                });
+                
+                canvas.addEventListener('touchend', (e) => {
+                    if (cornerPressStart && Date.now() - cornerPressStart > 2000) {
+                        showCaregiverPanel();
+                    }
+                    cornerPressStart = 0;
+                });
+                
+                // Mouse equivalent
+                canvas.addEventListener('mousedown', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    if (x < 100 && y < 100) {
+                        cornerPressStart = Date.now();
+                    }
+                });
+                
+                canvas.addEventListener('mouseup', (e) => {
+                    if (cornerPressStart && Date.now() - cornerPressStart > 2000) {
+                        showCaregiverPanel();
+                    }
+                    cornerPressStart = 0;
+                });
+            }
+            
+            // UI Creation Functions
+            function createLevelSelectUI() {
+                clearUI();
+                
+                const title = document.createElement('div');
+                title.className = 'modal fade-in';
+                title.style.width = '90%';
+                title.style.maxWidth = '800px';
+                title.innerHTML = `
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #2c3e50; font-size: 2.5em;">
+                        🌈 Joyful Journeys 🌈
+                    </h1>
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 1.2em; color: #7f8c8d;">
+                        Choose your adventure!
+                    </p>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">🎮 Choose Mode</h2>
+                        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                            ${createModeCards()}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">📊 Difficulty</h2>
+                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="difficulty-bubble ${difficulty === i ? 'selected' : ''}" 
+                                     onclick="setDifficulty(${i})">
+                                    ${i}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">⏱️ Session Length</h2>
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            <button class="button ${sessionLength === 'short' ? 'success' : 'secondary'}" 
+                                    onclick="setSessionLength('short')">
+                                ⏰ Short (2 min)
+                            </button>
+                            <button class="button ${sessionLength === 'medium' ? 'success' : 'secondary'}" 
+                                    onclick="setSessionLength('medium')">
+                                🕐 Medium (5 min)
+                            </button>
+                            <button class="button ${sessionLength === 'free' ? 'success' : 'secondary'}" 
+                                    onclick="setSessionLength('free')">
+                                ∞ Free Play
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">👥 Play Mode</h2>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                            <span style="font-size: 1.1em;">Child Solo Play</span>
+                            <div class="toggle ${guidedPlay ? 'active' : ''}" onclick="toggleGuidedPlay()"></div>
+                            <span style="font-size: 1.1em;">Guided Play</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 40px;">
+                        <button class="button" onclick="startGame()" style="font-size: 24px; padding: 20px 40px;">
+                            🚀 Start Game!
+                        </button>
+                    </div>
+                    
+                    <div style="position: absolute; top: 20px; right: 20px;">
+                        <div class="icon-button" onclick="toggleMute()" title="${muted ? 'Unmute' : 'Mute'}">
+                            ${muted ? '🔇' : '🔊'}
+                        </div>
+                    </div>
+                `;
+                
+                uiOverlay.appendChild(title);
+            }
+            
+            function createModeCards() {
+                const modes = [
+                    { id: 'emotion', icon: '😊', title: 'Emotion Match', color: '#f1c40f' },
+                    { id: 'sound', icon: '🔔', title: 'Sound & Attention', color: '#3498db' },
+                    { id: 'path', icon: '🛤️', title: 'Follow The Path', color: '#2ecc71' },
+                    { id: 'turn', icon: '🚂', title: 'Turn-Taking Train', color: '#9b59b6' },
+                    { id: 'request', icon: '🎁', title: 'Request & Choose', color: '#e74c3c' }
+                ];
+                
+                return modes.map(mode => `
+                    <div class="mode-card ${gameMode === mode.id ? 'selected' : ''}" 
+                         onclick="setGameMode('${mode.id}')"
+                         style="border-color: ${mode.color};">
+                        <div class="mode-icon">${mode.icon}</div>
+                        <h3 style="color: ${mode.color};">${mode.title}</h3>
+                        <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 10px;">
+                            ${getModeDescription(mode.id)}
+                        </p>
+                    </div>
+                `).join('');
+            }
+            
+            function getModeDescription(modeId) {
+                const descriptions = {
+                    emotion: 'Match faces with feelings',
+                    sound: 'Listen and identify sounds',
+                    path: 'Follow the glowing trail',
+                    turn: 'Take turns with a friend',
+                    request: 'Ask for what you want'
+                };
+                return descriptions[modeId] || '';
+            }
+            
+            // Game Mode Functions
+            function startGame() {
+                if (!gameMode) {
+                    alert('Please select a game mode!');
+                    return;
+                }
+                
+                progress.sessions = (progress.sessions || 0) + 1;
+                saveProgress();
+                
+                currentState = GameState.PLAYING;
+                currentRound = 0;
+                score = 0;
+                roundStartTime = Date.now();
+                
+                switch(sessionLength) {
+                    case 'short': sessionEndTime = Date.now() + 120000; break;
+                    case 'medium': sessionEndTime = Date.now() + 300000; break;
+                    case 'free': sessionEndTime = Infinity; break;
+                }
+                
+                clearUI();
+                createGameUI();
+                nextRound();
+            }
+            
+            function createGameUI() {
+                // Mute button
+                const muteBtn = document.createElement('div');
+                muteBtn.className = 'icon-button ui-element';
+                muteBtn.style.position = 'absolute';
+                muteBtn.style.top = '20px';
+                muteBtn.style.right = '20px';
+                muteBtn.innerHTML = muted ? '🔇' : '🔊';
+                muteBtn.onclick = toggleMute;
+                muteBtn.title = muted ? 'Unmute' : 'Mute';
+                uiOverlay.appendChild(muteBtn);
+                
+                // Pause button
+                const pauseBtn = document.createElement('div');
+                pauseBtn.className = 'icon-button ui-element';
+                pauseBtn.style.position = 'absolute';
+                pauseBtn.style.top = '20px';
+                pauseBtn.style.left = '20px';
+                pauseBtn.innerHTML = '⏸️';
+                pauseBtn.onclick = pauseGame;
+                pauseBtn.title = 'Pause';
+                uiOverlay.appendChild(pauseBtn);
+                
+                // Progress display
+                const progressDiv = document.createElement('div');
+                progressDiv.className = 'ui-element';
+                progressDiv.style.position = 'absolute';
+                progressDiv.style.top = '20px';
+                progressDiv.style.left = '50%';
+                progressDiv.style.transform = 'translateX(-50%)';
+                progressDiv.style.background = 'rgba(255, 255, 255, 0.9)';
+                progressDiv.style.padding = '10px 20px';
+                progressDiv.style.borderRadius = '25px';
+                progressDiv.style.fontSize = '18px';
+                progressDiv.style.display = 'flex';
+                progressDiv.style.alignItems = 'center';
+                progressDiv.style.gap = '15px';
+                progressDiv.innerHTML = `
+                    <span>⭐ ${score}</span>
+                    <span>🎯 Round ${currentRound}/${totalRounds}</span>
+                `;
+                uiOverlay.appendChild(progressDiv);
+                
+                if (guidedPlay) {
+                    const guidePrompt = document.createElement('div');
+                    guidePrompt.className = 'hint ui-element';
+                    guidePrompt.style.top = '100px';
+                    guidePrompt.style.left = '50%';
+                    guidePrompt.style.transform = 'translateX(-50%)';
+                    guidePrompt.textContent = getGuidedPrompt();
+                    uiOverlay.appendChild(guidePrompt);
+                }
+            }
+            
+            function getGuidedPrompt() {
+                const prompts = [
+                    "Great job! Ready for the next one?",
+                    "Take your time, you're doing great!",
+                    "What do you think comes next?",
+                    "Let's try this together!"
+                ];
+                return prompts[Math.floor(Math.random() * prompts.length)];
+            }
+            
+            function nextRound() {
+                currentRound++;
+                roundStartTime = Date.now();
+                
+                if (currentRound > totalRounds || Date.now() > sessionEndTime) {
+                    endGame();
+                    return;
+                }
+                
+                clearUI();
+                createGameUI();
+                
+                switch(gameMode) {
+                    case 'emotion': startEmotionRound(); break;
+                    case 'sound': startSoundRound(); break;
+                    case 'path': startPathRound(); break;
+                    case 'turn': startTurnRound(); break;
+                    case 'request': startRequestRound(); break;
+                }
+            }
+            
+            // Emotion Match Game
+            let currentEmotion = null;
+            let emotionOptions = [];
+            
+            function startEmotionRound() {
+                const emotionKeys = Object.keys(emotions);
+                const numOptions = Math.min(2 + difficulty, 6);
+                
+                currentEmotion = emotionKeys[Math.floor(Math.random() * emotionKeys.length)];
+                emotionOptions = [currentEmotion];
+                
+                while (emotionOptions.length < numOptions) {
+                    const randomEmotion = emotionKeys[Math.floor(Math.random() * emotionKeys.length)];
+                    if (!emotionOptions.includes(randomEmotion)) {
+                        emotionOptions.push(randomEmotion);
+                    }
+                }
+                
+                emotionOptions.sort(() => Math.random() - 0.5);
+                
+                drawEmotionScene();
+                createEmotionUI();
+            }
+            
+            function drawEmotionScene() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                
+                // Draw background
+                drawBackground();
+                
+                // Draw character
+                const character = characters[Math.floor(Math.random() * characters.length)];
+                drawCharacter(character, canvasWidth/2, canvasHeight/3, currentEmotion);
+                
+                // Draw emotion label
+                ctx.fillStyle = visualContrast === 'high' ? '#2c3e50' : '#34495e';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`How do I feel?`, canvasWidth/2, canvasHeight/3 + 200);
+            }
+            
+            function createEmotionUI() {
+                const optionHeight = 100;
+                const startY = canvasHeight * 2/3;
+                
+                emotionOptions.forEach((emotion, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'button ui-element';
+                    button.style.position = 'absolute';
+                    button.style.left = '50%';
+                    button.style.transform = 'translateX(-50%)';
+                    button.style.top = `${startY + index * (optionHeight + 20)}px`;
+                    button.style.width = '80%';
+                    button.style.maxWidth = '400px';
+                    button.style.fontSize = '24px';
+                    button.style.padding = '20px';
+                    button.style.display = 'flex';
+                    button.style.alignItems = 'center';
+                    button.style.justifyContent = 'center';
+                    button.style.gap = '20px';
+                    button.innerHTML = `
+                        <span class="emoji">${emotions[emotion].emoji}</span>
+                        <span>${emotions[emotion].description}</span>
+                    `;
+                    button.onclick = () => checkEmotionAnswer(emotion);
+                    uiOverlay.appendChild(button);
+                });
+                
+                if (hintsEnabled && difficulty <= 2) {
+                    setTimeout(() => {
+                        const hint = document.createElement('div');
+                        hint.className = 'hint ui-element';
+                        hint.style.bottom = '150px';
+                        hint.style.left = '50%';
+                        hint.style.transform = 'translateX(-50%)';
+                        hint.textContent = `Look for: ${emotions[currentEmotion].description}`;
+                        uiOverlay.appendChild(hint);
+                        progress.hintUsage = (progress.hintUsage || 0) + 1;
+                    }, 3000);
+                }
+            }
+            
+            function checkEmotionAnswer(selectedEmotion) {
+                const isCorrect = selectedEmotion === currentEmotion;
+                
+                if (isCorrect) {
+                    score += difficulty;
+                    playSound('bell', 1 + difficulty * 0.1);
+                    showFeedback('✅ Great job!', '#2ecc71');
+                } else {
+                    playSound('drum', 0.8);
+                    showFeedback('🤔 Try again!', '#e74c3c');
+                }
+                
+                trackResponseTime(Date.now() - roundStartTime);
+                
+                setTimeout(nextRound, 1500);
+            }
+            
+            // Sound & Attention Game
+            let currentSound = null;
+            let soundOptions = [];
+            
+            function startSoundRound() {
+                const soundKeys = Object.keys(sounds);
+                const numOptions = Math.min(2 + difficulty, 5);
+                
+                currentSound = soundKeys[Math.floor(Math.random() * soundKeys.length)];
+                soundOptions = [currentSound];
+                
+                while (soundOptions.length < numOptions) {
+                    const randomSound = soundKeys[Math.floor(Math.random() * soundKeys.length)];
+                    if (!soundOptions.includes(randomSound)) {
+                        soundOptions.push(randomSound);
+                    }
+                }
+                
+                soundOptions.sort(() => Math.random() - 0.5);
+                
+                drawSoundScene();
+                createSoundUI();
+                
+                setTimeout(() => playSound(currentSound), 1000);
+            }
+            
+            function drawSoundScene() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                drawBackground();
+                
+                // Draw character listening
+                const character = characters[Math.floor(Math.random() * characters.length)];
+                drawCharacter(character, canvasWidth/2, canvasHeight/3, 'surprised');
+                
+                // Draw sound waves
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    const radius = 100 + i * 20 + Math.sin(Date.now()/200 + i) * 10;
+                    ctx.arc(canvasWidth/2, canvasHeight/3, radius, 0, Math.PI * 2);
+                }
+                ctx.stroke();
+                
+                ctx.fillStyle = visualContrast === 'high' ? '#2c3e50' : '#34495e';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`What sound did you hear?`, canvasWidth/2, canvasHeight/3 + 200);
+            }
+            
+            function createSoundUI() {
+                const icons = {
+                    bell: '🔔',
+                    drum: '🥁',
+                    chime: '🎵',
+                    whistle: '📣',
+                    maraca: '🎊'
+                };
+                
+                const gridSize = Math.ceil(Math.sqrt(soundOptions.length));
+                const buttonSize = Math.min(150, canvasWidth / (gridSize + 1));
+                const startX = canvasWidth/2 - (gridSize * buttonSize)/2;
+                const startY = canvasHeight * 2/3;
+                
+                soundOptions.forEach((sound, index) => {
+                    const row = Math.floor(index / gridSize);
+                    const col = index % gridSize;
+                    
+                    const button = document.createElement('div');
+                    button.className = 'card ui-element';
+                    button.style.position = 'absolute';
+                    button.style.left = `${startX + col * buttonSize}px`;
+                    button.style.top = `${startY + row * buttonSize}px`;
+                    button.style.width = `${buttonSize - 20}px`;
+                    button.style.height = `${buttonSize - 20}px`;
+                    button.style.fontSize = `${buttonSize/3}px`;
+                    button.style.display = 'flex';
+                    button.style.alignItems = 'center';
+                    button.style.justifyContent = 'center';
+                    button.textContent = icons[sound] || '🎵';
+                    button.onclick = () => checkSoundAnswer(sound);
+                    uiOverlay.appendChild(button);
+                });
+                
+                // Replay button
+                const replayBtn = document.createElement('div');
+                replayBtn.className = 'icon-button ui-element';
+                replayBtn.style.position = 'absolute';
+                replayBtn.style.bottom = '50px';
+                replayBtn.style.left = '50%';
+                replayBtn.style.transform = 'translateX(-50%)';
+                replayBtn.innerHTML = '🔁';
+                replayBtn.onclick = () => playSound(currentSound);
+                replayBtn.title = 'Replay sound';
+                uiOverlay.appendChild(replayBtn);
+            }
+            
+            function checkSoundAnswer(selectedSound) {
+                const isCorrect = selectedSound === currentSound;
+                
+                if (isCorrect) {
+                    score += difficulty;
+                    playSound('chime', 1 + difficulty * 0.1);
+                    showFeedback('🎵 Perfect!', '#2ecc71');
+                } else {
+                    playSound('drum', 0.8);
+                    showFeedback('👂 Listen carefully!', '#e74c3c');
+                }
+                
+                trackResponseTime(Date.now() - roundStartTime);
+                
+                setTimeout(nextRound, 1500);
+            }
+            
+            // Follow The Path Game
+            let pathPoints = [];
+            let currentPathIndex = 0;
+            
+            function startPathRound() {
+                const numPoints = 3 + difficulty * 2;
+                pathPoints = [];
+                currentPathIndex = 0;
+                
+                // Generate curved path
+                for (let i = 0; i < numPoints; i++) {
+                    const x = 100 + (canvasWidth - 200) * (i / (numPoints - 1));
+                    const y = canvasHeight/2 + Math.sin(i * 0.8) * 100 + (Math.random() - 0.5) * 50;
+                    pathPoints.push({ x, y, radius: 30 + (20 - difficulty * 2) });
+                }
+                
+                drawPathScene();
+            }
+            
+            function drawPathScene() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                drawBackground();
+                
+                // Draw path
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                ctx.beginPath();
+                ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+                for (let i = 1; i < pathPoints.length; i++) {
+                    const cp1x = (pathPoints[i-1].x + pathPoints[i].x) / 2;
+                    const cp1y = pathPoints[i-1].y;
+                    const cp2x = cp1x;
+                    const cp2y = pathPoints[i].y;
+                    
+                    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, pathPoints[i].x, pathPoints[i].y);
+                }
+                ctx.stroke();
+                
+                // Draw points
+                pathPoints.forEach((point, index) => {
+                    ctx.fillStyle = index === currentPathIndex ? '#f1c40f' : 
+                                   index < currentPathIndex ? '#2ecc71' : '#95a5a6';
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    if (index === currentPathIndex) {
+                        // Glow effect
+                        ctx.shadowColor = '#f1c40f';
+                        ctx.shadowBlur = 20;
+                        ctx.beginPath();
+                        ctx.arc(point.x, point.y, point.radius + 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                });
+                
+                // Draw character at current position
+                if (currentPathIndex > 0) {
+                    const character = characters[Math.floor(Math.random() * characters.length)];
+                    const point = pathPoints[currentPathIndex - 1];
+                    drawCharacter(character, point.x, point.y - 60, 'happy');
+                }
+                
+                // Draw instructions
+                ctx.fillStyle = visualContrast === 'high' ? '#2c3e50' : '#34495e';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Follow the path!`, canvasWidth/2, 100);
+                
+                // Setup click handler
+                canvas.onclick = handlePathClick;
+            }
+            
+            function handlePathClick(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width) / dpr;
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height) / dpr;
+                
+                const currentPoint = pathPoints[currentPathIndex];
+                const distance = Math.sqrt((x - currentPoint.x) ** 2 + (y - currentPoint.y) ** 2);
+                
+                if (distance < currentPoint.radius) {
+                    playSound('bell', 1 + currentPathIndex * 0.1);
+                    currentPathIndex++;
+                    
+                    if (currentPathIndex >= pathPoints.length) {
+                        score += difficulty * 2;
+                        showFeedback('🎉 Path completed!', '#2ecc71');
+                        canvas.onclick = null;
+                        setTimeout(nextRound, 1500);
+                    } else {
+                        drawPathScene();
+                    }
+                } else {
+                    playSound('drum', 0.8);
+                }
+            }
+            
+            // Turn-Taking Train Game
+            let trainPieces = [];
+            let currentPieceIndex = 0;
+            let isPlayerTurn = true;
+            
+            function startTurnRound() {
+                const numPieces = 3 + difficulty;
+                trainPieces = [];
+                currentPieceIndex = 0;
+                isPlayerTurn = Math.random() > 0.5;
+                
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6'];
+                const shapes = ['square', 'circle', 'triangle', 'diamond'];
+                
+                for (let i = 0; i < numPieces; i++) {
+                    trainPieces.push({
+                        color: colors[i % colors.length],
+                        shape: shapes[i % shapes.length],
+                        x: 150 + i * 100,
+                        y: canvasHeight/2
+                    });
+                }
+                
+                drawTrainScene();
+                if (isPlayerTurn) {
+                    showTurnPrompt('Your turn!');
+                } else {
+                    setTimeout(friendTurn, 1000);
+                }
+            }
+            
+            function drawTrainScene() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                drawBackground();
+                
+                // Draw train engine
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(50, canvasHeight/2 - 50, 100, 100);
+                ctx.fillStyle = '#34495e';
+                ctx.fillRect(140, canvasHeight/2 - 25, 50, 50);
+                
+                // Draw train pieces
+                trainPieces.forEach((piece, index) => {
+                    ctx.fillStyle = index < currentPieceIndex ? piece.color : '#ecf0f1';
+                    ctx.strokeStyle = piece.color;
+                    ctx.lineWidth = 3;
+                    
+                    switch(piece.shape) {
+                        case 'square':
+                            ctx.fillRect(piece.x, piece.y - 25, 50, 50);
+                            ctx.strokeRect(piece.x, piece.y - 25, 50, 50);
+                            break;
+                        case 'circle':
+                            ctx.beginPath();
+                            ctx.arc(piece.x + 25, piece.y, 25, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.stroke();
+                            break;
+                        case 'triangle':
+                            ctx.beginPath();
+                            ctx.moveTo(piece.x + 25, piece.y - 25);
+                            ctx.lineTo(piece.x, piece.y + 25);
+                            ctx.lineTo(piece.x + 50, piece.y + 25);
+                            ctx.closePath();
+                            ctx.fill();
+                            ctx.stroke();
+                            break;
+                        case 'diamond':
+                            ctx.beginPath();
+                            ctx.moveTo(piece.x + 25, piece.y - 25);
+                            ctx.lineTo(piece.x, piece.y);
+                            ctx.lineTo(piece.x + 25, piece.y + 25);
+                            ctx.lineTo(piece.x + 50, piece.y);
+                            ctx.closePath();
+                            ctx.fill();
+                            ctx.stroke();
+                            break;
+                    }
+                    
+                    if (index === currentPieceIndex && isPlayerTurn) {
+                        // Highlight current piece
+                        ctx.shadowColor = piece.color;
+                        ctx.shadowBlur = 20;
+                        ctx.beginPath();
+                        ctx.arc(piece.x + 25, piece.y, 40, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                });
+                
+                // Draw characters
+                const playerChar = characters[0];
+                const friendChar = characters[1];
+                
+                drawCharacter(playerChar, 100, canvasHeight/2 - 150, isPlayerTurn ? 'happy' : 'neutral');
+                drawCharacter(friendChar, canvasWidth - 100, canvasHeight/2 - 150, !isPlayerTurn ? 'happy' : 'neutral');
+                
+                canvas.onclick = isPlayerTurn ? handleTrainClick : null;
+            }
+            
+            function showTurnPrompt(text) {
+                const prompt = document.createElement('div');
+                prompt.className = 'hint ui-element';
+                prompt.style.top = '100px';
+                prompt.style.left = '50%';
+                prompt.style.transform = 'translateX(-50%)';
+                prompt.textContent = text;
+                uiOverlay.appendChild(prompt);
+                
+                if (guidedPlay) {
+                    const guide = document.createElement('div');
+                    guide.className = 'hint ui-element';
+                    guide.style.top = '150px';
+                    guide.style.left = '50%';
+                    guide.style.transform = 'translateX(-50%)';
+                    guide.textContent = isPlayerTurn ? 'Tap the glowing piece!' : "Friend's turn...";
+                    guide.style.background = '#9b59b6';
+                    uiOverlay.appendChild(guide);
+                }
+            }
+            
+            function handleTrainClick(e) {
+                if (!isPlayerTurn) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width) / dpr;
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height) / dpr;
+                
+                const currentPiece = trainPieces[currentPieceIndex];
+                const distance = Math.sqrt((x - (currentPiece.x + 25)) ** 2 + (y - currentPiece.y) ** 2);
+                
+                if (distance < 40) {
+                    playSound('bell');
+                    currentPieceIndex++;
+                    
+                    if (currentPieceIndex >= trainPieces.length) {
+                        score += difficulty * 2;
+                        showFeedback('🚂 Train complete!', '#2ecc71');
+                        canvas.onclick = null;
+                        setTimeout(nextRound, 1500);
+                    } else {
+                        isPlayerTurn = false;
+                        drawTrainScene();
+                        setTimeout(friendTurn, 1000);
+                    }
+                }
+            }
+            
+            function friendTurn() {
+                clearUI();
+                createGameUI();
+                showTurnPrompt("Friend's turn!");
+                
+                setTimeout(() => {
+                    playSound('chime');
+                    currentPieceIndex++;
+                    
+                    if (currentPieceIndex >= trainPieces.length) {
+                        score += difficulty * 2;
+                        showFeedback('🚂 Train complete!', '#2ecc71');
+                        setTimeout(nextRound, 1500);
+                    } else {
+                        isPlayerTurn = true;
+                        drawTrainScene();
+                        showTurnPrompt('Your turn!');
+                    }
+                }, 1500);
+            }
+            
+            // Request & Choose Game
+            let requestedItem = null;
+            let requestOptions = [];
+            
+            function startRequestRound() {
+                const items = [
+                    { emoji: '🍎', name: 'Apple', color: '#e74c3c' },
+                    { emoji: '🚗', name: 'Car', color: '#3498db' },
+                    { emoji: '📚', name: 'Book', color: '#9b59b6' },
+                    { emoji: '💧', name: 'Water', color: '#2980b9' },
+                    { emoji: '⚽', name: 'Ball', color: '#27ae60' },
+                    { emoji: '🛏️', name: 'Rest', color: '#95a5a6' }
+                ];
+                
+                const numOptions = Math.min(2 + difficulty, 6);
+                requestedItem = items[Math.floor(Math.random() * items.length)];
+                requestOptions = [requestedItem];
+                
+                while (requestOptions.length < numOptions) {
+                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                    if (!requestOptions.find(item => item.name === randomItem.name)) {
+                        requestOptions.push(randomItem);
+                    }
+                }
+                
+                requestOptions.sort(() => Math.random() - 0.5);
+                
+                drawRequestScene();
+                createRequestUI();
+            }
+            
+            function drawRequestScene() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                drawBackground();
+                
+                // Draw character
+                const character = characters[Math.floor(Math.random() * characters.length)];
+                drawCharacter(character, canvasWidth/2, canvasHeight/3, 'thinking');
+                
+                // Draw thought bubble
+                ctx.strokeStyle = '#34495e';
+                ctx.lineWidth = 3;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                
+                // Thought bubble circles
+                const bubbleX = canvasWidth/2 + 100;
+                const bubbleY = canvasHeight/3 - 100;
+                
+                ctx.beginPath();
+                ctx.arc(bubbleX, bubbleY, 60, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Smaller connecting circles
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(bubbleX - 40 - i * 15, bubbleY + 20 - i * 10, 15 - i * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+                
+                // Requested item in thought bubble
+                ctx.font = 'bold 40px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = requestedItem.color;
+                ctx.fillText(requestedItem.emoji, bubbleX, bubbleY + 15);
+                
+                // Instruction
+                ctx.fillStyle = visualContrast === 'high' ? '#2c3e50' : '#34495e';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.fillText(`What do I want?`, canvasWidth/2, canvasHeight/3 + 200);
+            }
+            
+            function createRequestUI() {
+                const gridSize = Math.ceil(Math.sqrt(requestOptions.length));
+                const buttonSize = Math.min(150, canvasWidth / (gridSize + 1));
+                const startX = canvasWidth/2 - (gridSize * buttonSize)/2;
+                const startY = canvasHeight * 2/3;
+                
+                requestOptions.forEach((item, index) => {
+                    const row = Math.floor(index / gridSize);
+                    const col = index % gridSize;
+                    
+                    const button = document.createElement('div');
+                    button.className = 'card ui-element';
+                    button.style.position = 'absolute';
+                    button.style.left = `${startX + col * buttonSize}px`;
+                    button.style.top = `${startY + row * buttonSize}px`;
+                    button.style.width = `${buttonSize - 20}px`;
+                    button.style.height = `${buttonSize - 20}px`;
+                    button.style.fontSize = `${buttonSize/3}px`;
+                    button.style.display = 'flex';
+                    button.style.flexDirection = 'column';
+                    button.style.alignItems = 'center';
+                    button.style.justifyContent = 'center';
+                    button.style.gap = '10px';
+                    button.innerHTML = `
+                        <div>${item.emoji}</div>
+                        <div style="font-size: ${buttonSize/6}px; color: ${item.color};">
+                            ${item.name}
+                        </div>
+                    `;
+                    button.onclick = () => checkRequestAnswer(item);
+                    uiOverlay.appendChild(button);
+                });
+                
+                if (guidedPlay) {
+                    const modelBtn = document.createElement('button');
+                    modelBtn.className = 'button ui-element';
+                    modelBtn.style.position = 'absolute';
+                    modelBtn.style.bottom = '50px';
+                    modelBtn.style.left = '50%';
+                    modelBtn.style.transform = 'translateX(-50%)';
+                    modelBtn.innerHTML = '🗣️ Model: "I want..."';
+                    modelBtn.onclick = () => {
+                        playSound('chime');
+                        showFeedback(`"I want ${requestedItem.name}"`, '#3498db');
+                    };
+                    uiOverlay.appendChild(modelBtn);
+                }
+            }
+            
+            function checkRequestAnswer(selectedItem) {
+                const isCorrect = selectedItem.name === requestedItem.name;
+                
+                if (isCorrect) {
+                    score += difficulty;
+                    playSound('bell', 1 + difficulty * 0.1);
+                    showFeedback(`✅ Yes! I wanted ${requestedItem.name}`, '#2ecc71');
+                } else {
+                    playSound('drum', 0.8);
+                    showFeedback(`🤔 I wanted ${requestedItem.name}`, '#e74c3c');
+                }
+                
+                trackResponseTime(Date.now() - roundStartTime);
+                
+                setTimeout(nextRound, 1500);
+            }
+            
+            // Drawing Functions
+            function drawBackground() {
+                // Gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+                gradient.addColorStop(0, visualContrast === 'high' ? '#e6f7ff' : '#f8fdff');
+                gradient.addColorStop(1, visualContrast === 'high' ? '#d4edff' : '#f0f9ff');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                
+                // Decorative circles
+                for (let i = 0; i < 20; i++) {
+                    const x = (i * 123) % canvasWidth;
+                    const y = (i * 76) % canvasHeight;
+                    const radius = 5 + Math.sin(Date.now()/1000 + i) * 2;
+                    
+                    ctx.fillStyle = `rgba(74, 144, 226, ${0.05 + Math.sin(Date.now()/2000 + i) * 0.05})`;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            function drawCharacter(character, x, y, emotion) {
+                const skinTone = character.skinTone;
+                const hairColor = character.hairColor;
+                
+                // Body
+                ctx.fillStyle = '#4a90e2';
+                ctx.fillRect(x - 30, y + 40, 60, 80);
+                
+                // Head
+                ctx.fillStyle = skinTone;
+                ctx.beginPath();
+                ctx.arc(x, y, 40, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Hair
+                ctx.fillStyle = hairColor;
+                switch(character.hairStyle) {
+                    case 'afro':
+                        ctx.beginPath();
+                        ctx.arc(x, y - 20, 50, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'braids':
+                        for (let i = 0; i < 8; i++) {
+                            const angle = (i / 8) * Math.PI * 2;
+                            const braidX = x + Math.cos(angle) * 35;
+                            const braidY = y - 15 + Math.sin(angle) * 25;
+                            ctx.fillRect(braidX - 4, braidY - 20, 8, 40);
+                        }
+                        break;
+                    case 'twists':
+                        for (let i = 0; i < 6; i++) {
+                            const twistX = x - 25 + i * 10;
+                            ctx.fillRect(twistX, y - 45, 6, 30);
+                        }
+                        break;
+                    case 'curls':
+                        for (let i = 0; i < 15; i++) {
+                            const curlX = x - 30 + Math.random() * 60;
+                            const curlY = y - 40 + Math.random() * 30;
+                            const radius = 5 + Math.random() * 8;
+                            ctx.beginPath();
+                            ctx.arc(curlX, curlY, radius, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        break;
+                }
+                
+                // Eyes
+                const eyeY = y - 5;
+                const eyeOffset = 15;
+                ctx.fillStyle = character.eyeColor;
+                ctx.beginPath();
+                ctx.arc(x - eyeOffset, eyeY, 8, 0, Math.PI * 2);
+                ctx.arc(x + eyeOffset, eyeY, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Emotion-based mouth
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                
+                switch(emotion) {
+                    case 'happy':
+                        ctx.beginPath();
+                        ctx.arc(x, y + 15, 15, 0, Math.PI);
+                        ctx.stroke();
+                        break;
+                    case 'sad':
+                        ctx.beginPath();
+                        ctx.arc(x, y + 30, 15, Math.PI, 0);
+                        ctx.stroke();
+                        break;
+                    case 'angry':
+                        // Angry eyebrows
+                        ctx.beginPath();
+                        ctx.moveTo(x - 25, y - 15);
+                        ctx.lineTo(x - 5, y - 10);
+                        ctx.moveTo(x + 5, y - 10);
+                        ctx.lineTo(x + 25, y - 15);
+                        ctx.stroke();
+                        
+                        // Straight mouth
+                        ctx.beginPath();
+                        ctx.moveTo(x - 15, y + 20);
+                        ctx.lineTo(x + 15, y + 20);
+                        ctx.stroke();
+                        break;
+                    case 'surprised':
+                        // Round mouth
+                        ctx.beginPath();
+                        ctx.arc(x, y + 20, 10, 0, Math.PI * 2);
+                        ctx.stroke();
+                        break;
+                    case 'tired':
+                        // Half-closed eyes
+                        ctx.fillStyle = character.eyeColor;
+                        ctx.fillRect(x - eyeOffset - 8, eyeY - 2, 16, 4);
+                        ctx.fillRect(x + eyeOffset - 8, eyeY - 2, 16, 4);
+                        
+                        // Yawn mouth
+                        ctx.beginPath();
+                        ctx.arc(x, y + 25, 12, 0, Math.PI);
+                        ctx.stroke();
+                        break;
+                    case 'scared':
+                        // Wide eyes
+                        ctx.beginPath();
+                        ctx.arc(x - eyeOffset, eyeY, 12, 0, Math.PI * 2);
+                        ctx.arc(x + eyeOffset, eyeY, 12, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Small mouth
+                        ctx.beginPath();
+                        ctx.arc(x, y + 25, 8, 0, Math.PI * 2);
+                        ctx.stroke();
+                        break;
+                    default:
+                        // Neutral
+                        ctx.beginPath();
+                        ctx.moveTo(x - 15, y + 20);
+                        ctx.lineTo(x + 15, y + 20);
+                        ctx.stroke();
+                }
+                
+                // Glasses if needed
+                if (character.features.includes('glasses')) {
+                    ctx.strokeStyle = '#34495e';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x - eyeOffset, eyeY, 12, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffset, eyeY, 12, 0, Math.PI * 2);
+                    ctx.moveTo(x - eyeOffset + 12, eyeY);
+                    ctx.lineTo(x + eyeOffset - 12, eyeY);
+                    ctx.stroke();
+                }
+            }
+            
+            function showFeedback(text, color) {
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback ui-element';
+                feedback.style.color = color;
+                feedback.style.top = '50%';
+                feedback.style.left = '50%';
+                feedback.style.transform = 'translate(-50%, -50%)';
+                feedback.textContent = text;
+                uiOverlay.appendChild(feedback);
+                
+                setTimeout(() => feedback.remove(), 1000);
+            }
+            
+            // Game Flow Functions
+            function endGame() {
+                currentState = GameState.RESULTS;
+                clearUI();
+                
+                const stars = Math.min(5, Math.floor(score / (difficulty * 2)));
+                
+                // Update progress
+                progress.modes[gameMode] = (progress.modes[gameMode] || 0) + 1;
+                progress.difficulties[difficulty] = (progress.difficulties[difficulty] || 0) + 1;
+                progress.completions[gameMode] = (progress.completions[gameMode] || 0) + 1;
+                saveProgress();
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal fade-in';
+                modal.style.width = '90%';
+                modal.style.maxWidth = '600px';
+                modal.innerHTML = `
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">
+                        Session Complete! 🎉
+                    </h1>
+                    
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">
+                            ${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}
+                        </div>
+                        <div style="font-size: 24px; color: #7f8c8d;">
+                            Score: ${score} points
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">Skills Practiced</h2>
+                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                            ${getSkillIcons()}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                        <button class="button" onclick="playAgain()">
+                            🔁 Play Again
+                        </button>
+                        <button class="button secondary" onclick="backToLevelSelect()">
+                            🏠 Level Select
+                        </button>
+                    </div>
+                `;
+                
+                uiOverlay.appendChild(modal);
+            }
+            
+            function getSkillIcons() {
+                const skills = {
+                    emotion: { icon: '😊', label: 'Emotion Recognition' },
+                    sound: { icon: '👂', label: 'Auditory Attention' },
+                    path: { icon: '🖐️', label: 'Visual Tracking' },
+                    turn: { icon: '🤝', label: 'Turn Taking' },
+                    request: { icon: '💬', label: 'Communication' }
+                };
+                
+                const currentSkill = skills[gameMode];
+                return `
+                    <div class="skill-icon" title="${currentSkill.label}">
+                        ${currentSkill.icon}
+                    </div>
+                `;
+            }
+            
+            function playAgain() {
+                startGame();
+            }
+            
+            function backToLevelSelect() {
+                currentState = GameState.LEVEL_SELECT;
+                clearUI();
+                createLevelSelectUI();
+            }
+            
+            function pauseGame() {
+                if (currentState !== GameState.PLAYING) return;
+                
+                currentState = GameState.PAUSED;
+                isPaused = true;
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal fade-in';
+                modal.innerHTML = `
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">
+                        ⏸️ Game Paused
+                    </h1>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                        <button class="button" onclick="resumeGame()" style="width: 200px;">
+                            ▶️ Continue
+                        </button>
+                        <button class="button secondary" onclick="backToLevelSelect()" style="width: 200px;">
+                            🏠 Level Select
+                        </button>
+                        <div class="icon-button" onclick="toggleMute()" style="margin-top: 20px;">
+                            ${muted ? '🔇' : '🔊'}
+                        </div>
+                    </div>
+                `;
+                
+                uiOverlay.appendChild(modal);
+            }
+            
+            function resumeGame() {
+                currentState = GameState.PLAYING;
+                isPaused = false;
+                clearUI();
+                createGameUI();
+            }
+            
+            function showCaregiverPanel() {
+                currentState = GameState.CAREGIVER;
+                clearUI();
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal fade-in';
+                modal.style.width = '90%';
+                modal.style.maxWidth = '800px';
+                modal.innerHTML = `
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">
+                        👨‍👩‍👧‍👦 Caregiver Settings
+                    </h1>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">🎵 Sound Settings</h2>
+                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                            <span>Volume:</span>
+                            <input type="range" class="slider" min="0" max="1" step="0.1" 
+                                   value="${volume}" onchange="setVolume(this.value)">
+                            <span>${Math.round(volume * 100)}%</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <span>Mute:</span>
+                            <div class="toggle ${muted ? 'active' : ''}" onclick="toggleMute()"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">🌈 Visual Settings</h2>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>Animation Intensity:</span>
+                                <select onchange="setAnimationIntensity(this.value)" 
+                                        style="padding: 10px; border-radius: 10px; border: 2px solid #4a90e2;">
+                                    <option value="low" ${animationIntensity === 'low' ? 'selected' : ''}>Low</option>
+                                    <option value="medium" ${animationIntensity === 'medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="high" ${animationIntensity === 'high' ? 'selected' : ''}>High</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>Visual Contrast:</span>
+                                <select onchange="setVisualContrast(this.value)"
+                                        style="padding: 10px; border-radius: 10px; border: 2px solid #4a90e2;">
+                                    <option value="normal" ${visualContrast === 'normal' ? 'selected' : ''}>Normal</option>
+                                    <option value="high" ${visualContrast === 'high' ? 'selected' : ''}>High</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>Hints:</span>
+                                <div class="toggle ${hintsEnabled ? 'active' : ''}" onclick="toggleHints()"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="margin-bottom: 15px; color: #4a90e2;">📊 Progress</h2>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div>Total Sessions: <strong>${progress.sessions || 0}</strong></div>
+                                <div>Hint Usage: <strong>${progress.hintUsage || 0}</strong></div>
+                            </div>
+                        </div>
+                        <button class="button secondary" onclick="copyProgress()" style="width: 100%;">
+                            📋 Copy Progress to Clipboard
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <button class="button" onclick="backToGame()">
+                            ← Back to Game
+                        </button>
+                        <button class="button secondary" onclick="resetProgress()">
+                            🔄 Reset Progress
+                        </button>
+                    </div>
+                `;
+                
+                uiOverlay.appendChild(modal);
+            }
+            
+            // Utility Functions
+            function clearUI() {
+                uiOverlay.innerHTML = '';
+                canvas.onclick = null;
+            }
+            
+            function trackResponseTime(time) {
+                progress.responseTimes = progress.responseTimes || [];
+                progress.responseTimes.push(time);
+                if (progress.responseTimes.length > 100) {
+                    progress.responseTimes.shift();
+                }
+            }
+            
+            function saveProgress() {
+                localStorage.setItem('joyfulJourneysProgress', JSON.stringify(progress));
+            }
+            
+            function copyProgress() {
+                const progressStr = JSON.stringify(progress, null, 2);
+                navigator.clipboard.writeText(progressStr).then(() => {
+                    alert('Progress copied to clipboard!');
+                });
+            }
+            
+            function resetProgress() {
+                if (confirm('Are you sure you want to reset all progress?')) {
+                    progress = {
+                        sessions: 0,
+                        modes: {},
+                        difficulties: {},
+                        responseTimes: [],
+                        hintUsage: 0,
+                        completions: {}
+                    };
+                    saveProgress();
+                    showCaregiverPanel();
+                }
+            }
+            
+            function backToGame() {
+                if (currentState === GameState.PAUSED) {
+                    resumeGame();
+                } else {
+                    backToLevelSelect();
+                }
+            }
+            
+            // Global functions for UI event handlers
+            window.setGameMode = function(mode) {
+                gameMode = mode;
+                createLevelSelectUI();
+            };
+            
+            window.setDifficulty = function(level) {
+                difficulty = level;
+                createLevelSelectUI();
+            };
+            
+            window.setSessionLength = function(length) {
+                sessionLength = length;
+                createLevelSelectUI();
+            };
+            
+            window.toggleGuidedPlay = function() {
+                guidedPlay = !guidedPlay;
+                createLevelSelectUI();
+            };
+            
+            window.toggleMute = function() {
+                muted = !muted;
+                if (muted && currentSounds.length > 0) {
+                    currentSounds.forEach(sound => {
+                        if (sound.gainNode) {
+                            sound.gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                        }
+                    });
+                }
+                createLevelSelectUI();
+            };
+            
+            window.setVolume = function(value) {
+                volume = parseFloat(value);
+            };
+            
+            window.setAnimationIntensity = function(value) {
+                animationIntensity = value;
+            };
+            
+            window.setVisualContrast = function(value) {
+                visualContrast = value;
+            };
+            
+            window.toggleHints = function() {
+                hintsEnabled = !hintsEnabled;
+                document.querySelector('.toggle').classList.toggle('active');
+            };
+            
+            window.startGame = startGame;
+            window.pauseGame = pauseGame;
+            window.resumeGame = resumeGame;
+            window.backToLevelSelect = backToLevelSelect;
+            window.playAgain = playAgain;
+            window.copyProgress = copyProgress;
+            window.resetProgress = resetProgress;
+            window.backToGame = backToGame;
+            
+            // Game loop
+            function gameLoop() {
+                if (!isPaused && currentState === GameState.PLAYING) {
+                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                    
+                    switch(gameMode) {
+                        case 'emotion':
+                            drawEmotionScene();
+                            break;
+                        case 'sound':
+                            drawSoundScene();
+                            break;
+                        case 'path':
+                            drawPathScene();
+                            break;
+                        case 'turn':
+                            drawTrainScene();
+                            break;
+                        case 'request':
+                            drawRequestScene();
+                            break;
+                    }
+                    
+                    // Update timer display if needed
+                    if (sessionEndTime !== Infinity) {
+                        const timeLeft = Math.max(0, sessionEndTime - Date.now());
+                        if (timeLeft < 10000) {
+                            // Blink warning in last 10 seconds
+                            if (Math.floor(Date.now() / 500) % 2 === 0) {
+                                ctx.fillStyle = '#e74c3c';
+                                ctx.font = 'bold 24px sans-serif';
+                                ctx.textAlign = 'right';
+                                ctx.fillText(`Time: ${Math.ceil(timeLeft/1000)}s`, canvasWidth - 20, 40);
+                            }
+                        }
+                    }
+                }
+                
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+            
+            // Start the game
+            init();
+        })();
+    </script>
+</body>
+</html>
