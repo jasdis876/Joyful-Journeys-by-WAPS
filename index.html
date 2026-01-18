@@ -81,13 +81,30 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 100%;
+        }
+
+        /* MENU SCREEN SPECIFIC LAYOUT */
+        #screen-init .screen-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-evenly;
+            gap: clamp(10px, 3vh, 30px);
+            padding: clamp(5px, 2vh, 15px) 0;
+        }
+
+        .menu-header {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         h1 {
             text-align: center;
             color: #3498db;
             font-size: clamp(1.6em, 5vw, 2.5em);
-            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             line-height: 1.2;
         }
@@ -96,23 +113,45 @@
             text-align: center;
             color: #7f8c8d;
             font-size: clamp(0.8em, 2.5vw, 1em);
-            margin-bottom: 5px;
             font-style: italic;
             line-height: 1.3;
+            padding: 0 10px;
         }
 
         .portrait-hint {
             text-align: center;
             color: #3498db;
             font-size: clamp(0.7em, 2vw, 0.9em);
-            margin-bottom: 15px;
             font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .menu-modes {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+        }
+
+        .mode-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+            gap: 12px;
+            align-content: center;
+        }
+
+        .menu-controls {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 2vh, 20px);
+            margin-top: auto;
         }
 
         h2 {
             color: #2980b9;
             font-size: clamp(1.2em, 4vw, 1.8em);
-            margin-bottom: 12px;
             text-align: center;
             line-height: 1.2;
         }
@@ -121,69 +160,7 @@
             text-align: center;
             color: #7f8c8d;
             font-size: clamp(0.8em, 2.8vw, 1.1em);
-            margin-bottom: 15px;
             line-height: 1.3;
-        }
-
-        .mode-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
-            gap: 12px;
-            margin: 15px 0;
-            flex: 1;
-            align-content: center;
-        }
-
-        @media (max-width: 420px), (max-height: 740px) {
-            .screen {
-                padding: 12px;
-                border-radius: 20px;
-            }
-            
-            .mode-cards {
-                gap: 10px;
-            }
-            
-            .mode-card {
-                padding: 12px !important;
-                font-size: 0.9em !important;
-                min-height: 70px;
-            }
-            
-            .difficulty-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1.1em;
-            }
-            
-            .btn {
-                padding: 14px 25px;
-                font-size: 1em;
-                max-width: 250px;
-                margin: 12px auto;
-            }
-            
-            .emoji-large {
-                font-size: clamp(3em, 12vw, 6em);
-                margin: 15px 0;
-            }
-            
-            .emoji-option {
-                font-size: clamp(2em, 6vw, 3em);
-                padding: 12px;
-                min-width: 70px;
-            }
-            
-            .parent-panel {
-                padding: 12px;
-                font-size: clamp(0.75em, 2.2vw, 0.9em);
-            }
-            
-            .turn-display {
-                font-size: clamp(1.6em, 5vw, 2.5em);
-                padding: 15px;
-                margin: 20px 0;
-            }
         }
 
         .mode-card {
@@ -220,7 +197,6 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin: 15px 0;
             flex-wrap: wrap;
         }
 
@@ -263,12 +239,12 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 12px auto;
             display: block;
             width: 100%;
             max-width: 260px;
             text-align: center;
             flex-shrink: 0;
+            margin: 0 auto;
         }
 
         .btn:hover, .btn:active {
@@ -285,6 +261,7 @@
             background: linear-gradient(135deg, #8e44ad, #7d3c98);
         }
 
+        /* GAME SCREENS */
         .emoji-large {
             font-size: clamp(3.5em, 14vw, 7em);
             text-align: center;
@@ -634,15 +611,109 @@
             background: white;
         }
 
-        @media (max-width: 768px) {
-            #gameFrame {
+        /* PHONE PORTRAIT OPTIMIZATION */
+        @media (max-width: 430px), (max-height: 780px) {
+            .screen {
+                padding: 12px;
                 border-radius: 20px;
+            }
+            
+            #screen-init .screen-content {
+                gap: clamp(8px, 2vh, 15px);
+                padding: clamp(3px, 1vh, 8px) 0;
+            }
+            
+            .mode-cards {
+                gap: 10px;
+            }
+            
+            .mode-card {
+                padding: 14px !important;
+                font-size: 0.9em !important;
+                min-height: 70px;
+            }
+            
+            .difficulty-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 14px 25px;
+                font-size: 1em;
+                max-width: 250px;
+            }
+            
+            h1 {
+                font-size: clamp(1.4em, 4.5vw, 2.2em);
+            }
+            
+            .tagline {
+                font-size: clamp(0.75em, 2.2vw, 0.95em);
+            }
+            
+            h2 {
+                font-size: clamp(1.1em, 3.5vw, 1.6em);
+            }
+            
+            .emoji-large {
+                font-size: clamp(3em, 12vw, 6em);
+                margin: 15px 0;
+            }
+            
+            .emoji-option {
+                font-size: clamp(2em, 6vw, 3em);
+                padding: 12px;
+                min-width: 70px;
+            }
+            
+            .parent-panel {
+                padding: 10px;
+                font-size: clamp(0.75em, 2.2vw, 0.9em);
+            }
+            
+            .turn-display {
+                font-size: clamp(1.6em, 5vw, 2.5em);
+                padding: 15px;
+                margin: 15px 0;
             }
             
             .path-dot {
                 width: 48px;
                 height: 48px;
                 font-size: 1.4em;
+            }
+        }
+
+        @media (max-height: 600px) {
+            #screen-init .screen-content {
+                gap: 6px;
+                padding: 2px 0;
+            }
+            
+            .mode-card {
+                padding: 10px !important;
+                min-height: 60px;
+                font-size: 0.85em !important;
+            }
+            
+            .difficulty-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.95em;
+                max-width: 230px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #gameFrame {
+                border-radius: 20px;
             }
         }
     </style>
@@ -656,28 +727,33 @@
                 <!-- Initial Screen -->
                 <div class="screen active" id="screen-init">
                     <div class="screen-content">
-                        <h1>🎮 Joyful Journeys</h1>
-                        <div class="tagline">We are here to help — Western Autism Parents Support</div>
-                        <div class="portrait-hint">Best in Portrait Mode 📱</div>
-                        
-                        <div class="mode-cards">
-                            <div class="mode-card" data-mode="1">😊 Emotion Match</div>
-                            <div class="mode-card" data-mode="2">🔊 Sound & Attention</div>
-                            <div class="mode-card" data-mode="3">🟢 Follow the Path</div>
-                            <div class="mode-card" data-mode="4">🤝 Turn-Taking</div>
-                            <div class="mode-card" data-mode="5">🎁 Request & Choose</div>
+                        <div class="menu-header">
+                            <h1>🎮 Joyful Journeys</h1>
+                            <div class="tagline">We are here to help — Western Autism Parents Support</div>
+                            <div class="portrait-hint">Best in Portrait Mode 📱</div>
                         </div>
                         
-                        <h2>Select Difficulty</h2>
-                        <div class="difficulty-selector">
-                            <button class="difficulty-btn" data-level="1">1</button>
-                            <button class="difficulty-btn" data-level="2">2</button>
-                            <button class="difficulty-btn" data-level="3">3</button>
-                            <button class="difficulty-btn" data-level="4">4</button>
-                            <button class="difficulty-btn" data-level="5">5</button>
+                        <div class="menu-modes">
+                            <div class="mode-cards">
+                                <div class="mode-card" data-mode="1">😊 Emotion Match</div>
+                                <div class="mode-card" data-mode="2">🔊 Sound & Attention</div>
+                                <div class="mode-card" data-mode="3">🟢 Follow the Path</div>
+                                <div class="mode-card" data-mode="4">🤝 Turn-Taking</div>
+                                <div class="mode-card" data-mode="5">🎁 Request & Choose</div>
+                            </div>
                         </div>
                         
-                        <button class="btn" id="start-btn">🚀 Start Game</button>
+                        <div class="menu-controls">
+                            <h2>Select Difficulty</h2>
+                            <div class="difficulty-selector">
+                                <button class="difficulty-btn" data-level="1">1</button>
+                                <button class="difficulty-btn" data-level="2">2</button>
+                                <button class="difficulty-btn" data-level="3">3</button>
+                                <button class="difficulty-btn" data-level="4">4</button>
+                                <button class="difficulty-btn" data-level="5">5</button>
+                            </div>
+                            <button class="btn" id="start-btn">🚀 Start Game</button>
+                        </div>
                     </div>
                 </div>
                 
